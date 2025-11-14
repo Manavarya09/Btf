@@ -75,17 +75,17 @@ const MessageSection = () => {
             <div className="container mx-auto flex-center py-28 relative">
                 <div className="w-full h-full md:px-30 ">
                     <div className="msg-wrapper">
-                        <h1 className="first-message text-wrap w-[90%]">Stir up your fearless past and</h1>
+                        <h1 className="first-message text-wrap w-[90%]">SEE ALL OF DUBAI IN ONE VIEW</h1>
                         <div className="msg-text-scroll md:mt-12 mt-0">
                             <div className="bg-light-brown md:pb-4 pb-3 px-5">
-                                <h2 className="text-red-brown">Fuel Up</h2>
+                                <h2 className="text-red-brown">MOVE SMART</h2>
                             </div>
                         </div>
-                        <h1 className="second-message md:w-full w-[80%]">your future with every gulp of Perfect Protein</h1>
+                        <h1 className="second-message md:w-full w-[80%]">YOUR DAILY JOURNEY WITH ARYA MOBILITY OS</h1>
                     </div>
                     <div className="flex-center md:mt-20 mt-10">
                         <div className="max-w-md px-10 flex-center overflow-hidden">
-                            <p>Rev up your rebel spirit and feed the adventure of life with SPYLT, where you’re one chug away from epic nostalgia and fearless fun.</p>
+                            <p>ARYA Mobility OS brings EVs, transit, parking, scooters, and heat safety into one calm dashboard, so every trip across Dubai feels simple and in control.</p>
                         </div>
                     </div>
                 </div>

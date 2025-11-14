@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useMediaQuery } from "react-responsive";
 import { getImage, getVideo } from "@/lib/landing/media";
+import Link from "next/link";
 
 export const HeroSection: React.FC = () => {
   const isMobHero = useMediaQuery({
@@ -92,19 +93,19 @@ export const HeroSection: React.FC = () => {
         )}
         <div className="hero-content opacity-0">
           <div className="overflow-hidden">
-            <h1 className="hero-title lg:p-0 p-2">Freaking Delicious</h1>
+            <h1 className="hero-title lg:p-0 p-2">CALM, CONNECTED</h1>
           </div>
           <div className="hero-text-scroll">
-            <div className="hero-subtitle">
-              <h1>Protein + Caffine</h1>
-            </div>
+          <div className="hero-subtitle">
+            <h1>MOBILITY + AI INTELLIGENCE</h1>
+          </div>
           </div>
           <h2>
             Live life to the fullest with SPYLT: Shatter boredom and embrace your
             inner kid with every deliciously smooth chug.
           </h2>
           <div className="hero-button hover:bg-[#e9aa56]">
-            <a href="#">Chug a SPYLT</a>
+            <Link href="/app">LAUNCH ARYA MOBILITY OS</Link>
           </div>
         </div>
       </div>

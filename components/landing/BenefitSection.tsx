@@ -69,28 +69,28 @@ export const BenefitSection: React.FC = () => {
 
         <div className="md:mt-20 md:mb-0 mb-30 mt-30 col-center">
           <ClipPathTitle
-            title="Shelf stable"
+            title="ONE CITY DASHBOARD"
             color="#faeade"
             bg="#c88e64"
             className="first-title"
             borderColor="#222123"
           />
           <ClipPathTitle
-            title="Protein+Caffeine"
+            title="EV + TRANSIT + PARKING"
             color="#222123"
             bg="#faeade"
             className="second-title"
             borderColor="#222123"
           />
           <ClipPathTitle
-            title="Infinitely recyclable"
+            title="HEAT-SAFE WALKING ROUTES"
             color="#faeade"
             bg="#7f3b2d"
             className="third-title"
             borderColor="#222123"
           />
           <ClipPathTitle
-            title="Lactose free"
+            title="EVENT-AWARE PLANNING"
             color="#2e2d2f"
             bg="#fed775"
             className="fourth-title"

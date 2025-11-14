@@ -140,7 +140,7 @@ export default function AppOverview() {
               <p className="text-sm text-center text-white/80 mb-4">
                 Ask me anything about mobility, routes, or safety
               </p>
-              <button className="w-full px-4 py-2 bg-white text-accent-warm font-semibold rounded-lg hover:bg-opacity-90 transition-all">
+              <button className="w-full px-4 py-2 bg-white text-accent-warm font-semibold rounded-lg hover:bg-white/90 transition-all">
                 Open Chat
               </button>
             </div>

@@ -36,7 +36,7 @@ const FooterSection = () => {
 
             <div className="2xl:h-[110dvh] relative z-100 lg:pt-[8vh] pt-[8vh]">
                 <div className="overflow-hidden">
-                    <h1 className="general-title text-center text-milk footer-title-animation lg:pb-0 pb-5">#CHUGRESPONSIBLY</h1>
+                    <h1 className="general-title text-center text-milk footer-title-animation lg:pb-0 pb-5">#MOVEINTELLIGENTLY</h1>
                 </div>
             </div>
             {
@@ -77,8 +77,7 @@ const FooterSection = () => {
                 </div>
                 <div className="md:max-w-sm">
                     <p>
-                        Get Exclusive Early Access and Stay Informed About Product
-                        Updates, Events, and More!
+                        Get early access to ARYA Mobility OS, and stay informed about new routes, features, and smart-city launches in Dubai.
                     </p>
                     <div className="flex justify-between items-center border-b border-[#D9D9D9] py-4 md:mt-6">
                         <input

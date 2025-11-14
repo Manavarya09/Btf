@@ -68,11 +68,11 @@ export const NutritionSection: React.FC = () => {
           <div className="relative inline-block md:translate-y-20 z-100">
             <div className="general-title relative flex flex-col justify-center items-center gap-24">
               <div className="overflow-hidden place-self-start h1-animate lg:p-0 p-1">
-                <h1>It still does</h1>
+                <h1>It still puts</h1>
               </div>
               <div className="nutrition-text-scroll place-self-start">
                 <div className="bg-yellow-brown pb-5 md:pt-0 pt-3 md:px-5 px-3 inline-block">
-                  <h2 className="text-milk-yellow rolling">Body Good</h2>
+                  <h2 className="text-milk-yellow rolling">People First</h2>
                 </div>
               </div>
             </div>
@@ -80,8 +80,7 @@ export const NutritionSection: React.FC = () => {
           <div className="flex md:justify-end items-start md:translate-y-20 translate-y-10">
             <div className="md:max-w-xs w-[70%]">
               <p className="text-sm md:text-right text-balance font-paragraph para-animate">
-                Milk contains a wide array of nutrients including vitamins,
-                minerals, and proteins and that is lactose free.
+                ARYA is designed around real people, not just vehicles — balancing comfort, safety, and time so every journey feels human-friendly.
               </p>
             </div>
           </div>
