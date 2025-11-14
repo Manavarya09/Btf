@@ -11844,8 +11844,7 @@
     align-items: center;
     justify-content: center;
     gap: calc(var(--spacing) * 14);
-    font-size: var(--text-5xl);
-    line-height: var(--tw-leading, var(--text-5xl--line-height));
+    font-size: 3.8rem;
     --tw-leading: 9vw;
     line-height: 9vw;
     --tw-font-weight: var(--font-weight-bold);
@@ -11862,6 +11861,49 @@
     max-width: var(--container-xs);
     text-align: center;
     color: #faeade10;
+  }
+  .message-content .first-message {
+    font-size: 5rem;
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
+  }
+  .message-content .msg-text-scroll h2 {
+    font-size: 4rem;
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
+  }
+  .message-content .second-message {
+    font-size: 4.4rem;
+    --tw-font-weight: var(--font-weight-extrabold);
+    font-weight: var(--font-weight-extrabold);
+  }
+  @screen md {
+    .message-content .msg-wrapper {
+      font-size: 120px;
+    }
+    .message-content .first-message {
+      font-size: 180px;
+    }
+    .message-content .msg-text-scroll h2 {
+      font-size: 8rem;
+    }
+    .message-content .second-message {
+      font-size: 140px;
+    }
+  }
+  @screen 2xl {
+    .message-content .msg-wrapper {
+      font-size: 10rem;
+    }
+    .message-content .first-message {
+      font-size: 14rem;
+    }
+    .message-content .msg-text-scroll h2 {
+      font-size: 11rem;
+    }
+    .message-content .second-message {
+      font-size: 13rem;
+    }
   }
   .message-content p {
     font-family: var(--font-paragraph);

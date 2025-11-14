@@ -163,7 +163,7 @@
   }
 
   .message-content .msg-wrapper {
-    @apply text-5xl font-bold uppercase leading-[9vw] tracking-[-.35vw] flex flex-col justify-center items-center gap-14;
+    @apply text-[3.8rem] font-bold uppercase leading-[9vw] tracking-[-.35vw] flex flex-col justify-center items-center gap-14;
   }
 
   .message-content .msg-wrapper h1:first-of-type {
@@ -172,6 +172,33 @@
 
   .message-content .msg-wrapper h1:last-of-type {
     @apply max-w-xs text-center text-[#faeade10];
+  }
+
+  /* Bigger messaging headline scales */
+  .message-content .first-message {
+    @apply text-[5rem] font-extrabold;
+  }
+
+  .message-content .msg-text-scroll h2 {
+    @apply text-[4rem] font-extrabold;
+  }
+
+  .message-content .second-message {
+    @apply text-[4.4rem] font-extrabold;
+  }
+
+  @screen md {
+    .message-content .msg-wrapper { @apply text-[120px]; }
+    .message-content .first-message { @apply text-[180px]; }
+    .message-content .msg-text-scroll h2 { @apply text-[8rem]; }
+    .message-content .second-message { @apply text-[140px]; }
+  }
+
+  @screen 2xl {
+    .message-content .msg-wrapper { @apply text-[10rem]; }
+    .message-content .first-message { @apply text-[14rem]; }
+    .message-content .msg-text-scroll h2 { @apply text-[11rem]; }
+    .message-content .second-message { @apply text-[13rem]; }
   }
 
   .message-content p {

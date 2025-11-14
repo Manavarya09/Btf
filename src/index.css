@@ -152,6 +152,31 @@ body::-webkit-scrollbar {
             .msg-wrapper h1:last-of-type { @apply max-w-7xl; }
         }
 
+        /* Explicitly scale the three message lines for stronger visual impact */
+        .first-message {
+            @apply text-[5rem] font-extrabold;
+        }
+
+        .msg-text-scroll h2 {
+            @apply text-[4rem] font-extrabold;
+        }
+
+        .second-message {
+            @apply text-[4.4rem] font-extrabold text-center whitespace-normal break-words max-w-[36ch];
+        }
+
+        @screen md {
+            .first-message { @apply text-[180px]; }
+            .msg-text-scroll h2 { @apply text-[8rem]; }
+            .second-message { @apply text-[140px] max-w-[50ch]; }
+        }
+
+        @screen 2xl {
+            .first-message { @apply text-[14rem]; }
+            .msg-text-scroll h2 { @apply text-[11rem]; }
+            .second-message { @apply text-[13rem] max-w-[48ch]; }
+        }
+
         p {
             @apply text-center font-paragraph;
         }

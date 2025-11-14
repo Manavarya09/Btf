@@ -81,7 +81,7 @@ const MessageSection = () => {
                                 <h2 className="text-red-brown">MOVE SMART</h2>
                             </div>
                         </div>
-                        <h1 className="second-message md:w-full w-[80%]">YOUR DAILY JOURNEY WITH ARYA MOBILITY OS</h1>
+                        <h1 className="second-message md:w-full w-[80%]">YOUR DAILY JOURNEY WITH\u00A0ARYA MOBILITY OS</h1>
                     </div>
                     <div className="flex-center md:mt-20 mt-10">
                         <div className="max-w-md px-10 flex-center overflow-hidden">

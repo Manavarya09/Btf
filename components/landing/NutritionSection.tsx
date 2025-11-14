@@ -5,7 +5,7 @@ import { nutrientLists } from "@/lib/landing/details";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { useMediaQuery } from "react-responsive";
-import { getImage } from "@/lib/landing/media";
+import { getImage, getVideo } from "@/lib/landing/media";
 
 export const NutritionSection: React.FC = () => {
   const isMobile = useMediaQuery({
@@ -58,9 +58,12 @@ export const NutritionSection: React.FC = () => {
         alt=""
         className="w-full object-cover z-0"
       />
-      <img
-        src={getImage("big-img.png")}
-        alt=""
+      <video
+        src={getVideo("big-img.mp4")}
+        playsInline
+        muted
+        loop
+        autoPlay
         className="big-img"
       />
       <div className="flex flex-col justify-center">

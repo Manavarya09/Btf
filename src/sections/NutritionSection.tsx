@@ -3,7 +3,7 @@ import { nutrientLists } from "../constants/details"
 import gsap from "gsap"
 import { SplitText } from "gsap/all"
 import { useMediaQuery } from "react-responsive"
-import { getImage } from '../utils/media';
+import { getImage, getVideo } from '../utils/media';
 
 const NutritionSection = () => {
 
@@ -47,7 +47,7 @@ const NutritionSection = () => {
     return (
         <section className="nutrition-section">
             <img src={getImage("slider-dip.png")} alt="" className="w-full object-cover z-0" />
-            <img src={getImage("big-img.png")} alt="" className="big-img" />
+            <video src={getVideo("hero-bg.mp4")} playsInline muted loop autoPlay className="big-img" />
             <div className="flex flex-col justify-center">
                 <div className="flex md:flex-row flex-col justify-between md:px-10 px-5 mt-14 md:mt-0">
                     <div className="relative inline-block md:translate-y-20 z-100">
