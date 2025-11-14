@@ -19,8 +19,8 @@ interface BuilderContent {
   data: {
     title?: string;
     content?: string;
-    blocks?: any[];
-    [key: string]: any;
+    blocks?: unknown[];
+    [key: string]: unknown;
   };
   createdAt: number;
   updatedAt: number;
@@ -33,8 +33,8 @@ interface BuilderPage {
   data: {
     title?: string;
     description?: string;
-    blocks?: any[];
-    [key: string]: any;
+    blocks?: unknown[];
+    [key: string]: unknown;
   };
 }
 
@@ -45,7 +45,7 @@ interface BuilderPage {
 export async function getBuilderContent(
   model: string,
   options?: {
-    query?: Record<string, any>;
+    query?: Record<string, unknown>;
     limit?: number;
     offset?: number;
   }
@@ -79,7 +79,7 @@ export async function getBuilderContent(
       throw new Error(`Builder.io API error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { results?: BuilderContent[] };
     return data.results || [];
   } catch (error) {
     console.error('Failed to fetch Builder.io content:', error);
@@ -108,10 +108,10 @@ export async function getBuilderPage(
     );
 
     if (!response.ok) {
-      return null; // Page doesn't exist
+      return null;
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { data?: BuilderPage };
     return data.data || null;
   } catch (error) {
     console.error('Failed to fetch Builder.io page:', error);
@@ -143,7 +143,7 @@ export async function getFAQs(): Promise<
 export async function getInfoContent(section: string): Promise<{
   title: string;
   description: string;
-  blocks: any[];
+  blocks: unknown[];
 }> {
   const content = await getBuilderContent('info', {
     query: { 'data.section': section },
@@ -174,7 +174,7 @@ export async function getBlogPosts(limit = 10): Promise<
     id: string;
     title: string;
     excerpt: string;
-    image?: string;
+    image?: unknown;
     publishedAt: string;
     slug: string;
   }>
@@ -183,10 +183,10 @@ export async function getBlogPosts(limit = 10): Promise<
   return posts.map((item) => ({
     id: item.id,
     title: item.data.title || '',
-    excerpt: item.data.excerpt || '',
+    excerpt: item.data.content || '',
     image: item.data.image,
     publishedAt: new Date(item.createdAt).toISOString(),
-    slug: item.data.slug || item.id,
+    slug: (item.data.slug as string) || item.id,
   }));
 }
 
@@ -209,45 +209,6 @@ export async function testBuilderConnection(): Promise<boolean> {
     return false;
   }
 }
-
-/**
- * BuilderContent React component wrapper
- * Usage in components:
- * <BuilderContentBlock modelId="faq" />
- */
-export interface BuilderContentBlockProps {
-  modelId: string;
-  query?: Record<string, any>;
-  className?: string;
-}
-
-// This is a placeholder - actual implementation would use Builder's React SDK
-export const BuilderContentBlock = async ({
-  modelId,
-  query,
-  className = '',
-}: BuilderContentBlockProps) => {
-  const content = await getBuilderContent(modelId, { query });
-
-  if (!content.length) {
-    return (
-      <div className={className}>
-        <p className="text-gray-500">No content available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className={className}>
-      {content.map((item) => (
-        <div key={item.id} className="mb-6">
-          {item.data.title && <h3 className="text-xl font-bold mb-2">{item.data.title}</h3>}
-          {item.data.content && <p className="text-gray-700">{item.data.content}</p>}
-        </div>
-      ))}
-    </div>
-  );
-};
 
 export default {
   getBuilderContent,
