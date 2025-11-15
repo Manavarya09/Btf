@@ -72,17 +72,13 @@ export const FooterSection: React.FC = () => {
       <div className="mt-30 lg:mb-32 mb-20 md:px-7 px-5 flex gap-10 md:flex-row flex-col justify-between items-start text-milk font-paragraph md:text-sm font-medium">
         <div className="flex items-start md:gap-10 gap-5">
           <div>
-            <p>SPYLT Flavors</p>
+            <p>Arya</p>
           </div>
-          <div>
-            <p>Chug Club</p>
-            <p>Student Marketing</p>
-            <p>Dairy Dealers</p>
-          </div>
+         
           <div>
             <p>Company</p>
             <p>Contacts</p>
-            <p>Tasty Talk</p>
+            <p>github</p>
           </div>
         </div>
         <div className="md:max-w-sm">

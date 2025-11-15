@@ -60,13 +60,13 @@ export const BottomBanner: React.FC = () => {
           <div className="lg:mt-10 mt-2 text-[#f3e2d5] text-sm font-paragraph flex flex-col lg:gap-14 gap-8">
             <div>
               <p className="lg:w-1/2 w-[80%]">
-                Buy our drinks at your local store or get them delivered (to your
+                Access Dubai’s smart mobility features instantly—plan your route, check EV chargers, parking, and heat index, all in one app.
                 door).
               </p>
             </div>
             <div className="font-medium">
               <a href="#" className="px-10 py-4 rounded-4xl bg-black text-[#f3e2d5]">
-                FIND IN STORES
+                GO TO APP
               </a>
             </div>
           </div>

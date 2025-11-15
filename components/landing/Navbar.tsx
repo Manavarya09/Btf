@@ -65,7 +65,7 @@ export const Navbar: React.FC = () => {
 
         <div className="px-6 py-2 bg-[#f3e2d5] rounded-3xl hover:bg-[#e9aa56] text-center">
           <a href="#" className="text-[#523122] text-sm font-semibold p-0 m-0">
-            FIND STORES
+            Go to App
           </a>
         </div>
       </nav>

@@ -85,7 +85,7 @@ export const MessageSection: React.FC = () => {
               </div>
             </div>
             <h1 className="second-message md:w-full w-[80%]">
-              YOUR DAILY JOURNEY WITH\u00A0ARYA
+              YOUR DAILY JOURNEY WITH ARYA
             </h1>
           </div>
           <div className="flex-center md:mt-20 mt-10">
