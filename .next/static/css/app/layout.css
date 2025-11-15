@@ -515,9 +515,6 @@
   .inline-block {
     display: inline-block;
   }
-  .inline-flex {
-    display: inline-flex;
-  }
   .size-\[3vw\] {
     width: 3vw;
     height: 3vw;

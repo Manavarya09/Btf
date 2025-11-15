@@ -104,8 +104,7 @@ export const HeroSection: React.FC = () => {
           </div>
           <div className="hero-text-bg mt-3">
             <h2>
-              Live life to the fullest with SPYLT: Shatter boredom and embrace your
-              inner kid with every deliciously smooth chug.
+            Live life to the fullest with ARYA: Shatter the boundaries of Mobility.
             </h2>
           </div>
           <div className="hero-button hover:bg-[#e9aa56]">

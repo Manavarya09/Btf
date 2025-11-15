@@ -78,7 +78,7 @@ const HeroSection = () => {
                             <h1>MOBILITY + AI INTELLIGENCE</h1>
                         </div>
                     </div>
-                    <h2>Live life to the fullest with SPYLT: Shatter boredom and embrace your inner kid with every deliciously smooth chug.</h2>
+                    <h2>Live life to the fullest with ARYA: Shatter the boundaries of Mobility.</h2>
                     <div className="hero-button hover:bg-[#e9aa56]">
                         <Link href="/app">LAUNCH ARYA MOBILITY OS</Link>
                     </div>
