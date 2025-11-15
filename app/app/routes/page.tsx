@@ -9,6 +9,7 @@ export default function RoutesPage() {
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [routes, setRoutes] = useState<Array<{ id: number; from: string; to: string; time: number; cost: number; emissions: number; modes: string[] }>>([]);
+  const [isPlanning, setIsPlanning] = useState(false);
   
 
   const popularDestinations = [
@@ -89,6 +90,7 @@ export default function RoutesPage() {
       alert("Please enter both starting location and destination");
       return;
     }
+    setIsPlanning(true);
     let origin: { longitude: number; latitude: number } | null = null;
     if (fromLocation === "Current Location" && currentLocation) {
       origin = { longitude: currentLocation.longitude, latitude: currentLocation.latitude };
@@ -96,6 +98,7 @@ export default function RoutesPage() {
       const g = await geocode(fromLocation);
       if (!g) {
         alert("Could not find starting location");
+        setIsPlanning(false);
         return;
       }
       origin = { longitude: g.longitude, latitude: g.latitude };
@@ -103,6 +106,7 @@ export default function RoutesPage() {
     const dest = await geocode(toLocation);
     if (!dest) {
       alert("Could not find destination");
+      setIsPlanning(false);
       return;
     }
     const driving = await getRoute("driving-traffic", origin, dest);
@@ -111,6 +115,7 @@ export default function RoutesPage() {
     if (driving) results.push({ id: 1, from: fromLocation, to: toLocation, time: driving.time, cost: driving.cost, emissions: +(driving.emissions/1000).toFixed(2), modes: ["Uber"] });
     if (walking) results.push({ id: 2, from: fromLocation, to: toLocation, time: walking.time, cost: walking.cost, emissions: walking.emissions, modes: ["Walk"] });
     setRoutes(results);
+    setIsPlanning(false);
   };
 
   return (
@@ -176,6 +181,15 @@ export default function RoutesPage() {
           </div>
         </div>
 
+        <button
+          onClick={handlePlanRoute}
+          disabled={isPlanning}
+          className="w-full bg-accent-warm hover:bg-accent-warm/90 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <Navigation className="w-4 h-4" />
+          {isPlanning ? "Planning..." : "Plan Route"}
+        </button>
+
         <div className="flex gap-3">
           {["Fastest", "Cheapest", "Eco-friendly", "Coolest"].map((mode) => (
             <button
@@ -186,14 +200,6 @@ export default function RoutesPage() {
             </button>
           ))}
         </div>
-
-        <button
-          onClick={handlePlanRoute}
-          className="w-full bg-accent-warm hover:bg-accent-warm/90 text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-        >
-          <Navigation className="w-4 h-4" />
-          Plan Route
-        </button>
       </div>
 
       <div className="space-y-3">

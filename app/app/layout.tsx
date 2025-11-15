@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -33,6 +33,24 @@ export default function AppLayout({
 }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [temperature, setTemperature] = useState<number | null>(null);
+  const [city, setCity] = useState("Dubai");
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const lat = 25.2048;
+        const lon = 55.2708;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data?.current?.temperature_2m != null) {
+          setTemperature(Math.round(data.current.temperature_2m));
+        }
+      } catch {}
+    };
+    fetchWeather();
+  }, []);
 
   return (
     <div className="flex h-screen bg-surface dark:bg-bg-dark">
@@ -106,9 +124,9 @@ export default function AppLayout({
             <div className="flex items-center gap-4">
               <div className="hidden md:flex items-center gap-2 bg-surface-dark dark:bg-gray-700 rounded-lg px-3 py-2">
                 <span className="text-sm text-text-secondary dark:text-gray-400">
-                  Dubai
+                  {city}
                 </span>
-                <span className="text-lg">25.2° C</span>
+                <span className="text-lg">{temperature!=null ? `${temperature}° C` : "--"}</span>
               </div>
 
               <div className="w-10 h-10 rounded-full bg-accent-warm flex items-center justify-center text-white font-bold cursor-pointer hover:opacity-80 transition-opacity">

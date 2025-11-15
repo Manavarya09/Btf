@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Zap, MapPin, Wind, Users, AlertTriangle, Waypoints } from "lucide-react";
 import { getEVChargers } from "@/lib/simulators/ev";
+import { fetchChargersFromOCM } from "@/lib/openchargemap";
 import { getParkingZones } from "@/lib/simulators/parking";
 import { getHeatIndexForLocations, getHydrationRecommendation } from "@/lib/simulators/heat";
 import { getEventsUpcoming } from "@/lib/simulators/events";
@@ -12,21 +13,56 @@ export default function AppOverview() {
   const [chargers, setChargers] = useState<EVCharger[]>([]);
   const [parking, setParking] = useState<ParkingZone[]>([]);
   const [loading, setLoading] = useState(true);
+  const [temp, setTemp] = useState<number | null>(null);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     setLoading(true);
     try {
-      setChargers(getEVChargers().slice(0, 5));
-      setParking(getParkingZones().slice(0, 5));
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const loc = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+            setUserLocation(loc);
+            const data = await fetchChargersFromOCM(loc.latitude, loc.longitude, 10);
+            setChargers(data.slice(0, 5) as EVCharger[]);
+            setParking(getParkingZones().slice(0, 5));
+          },
+          async () => {
+            const data = getEVChargers().slice(0, 5);
+            setChargers(data);
+            setParking(getParkingZones().slice(0, 5));
+          }
+        );
+      } else {
+        setChargers(getEVChargers().slice(0, 5));
+        setParking(getParkingZones().slice(0, 5));
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const lat = userLocation?.latitude ?? 25.2048;
+        const lon = userLocation?.longitude ?? 55.2708;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data?.current?.temperature_2m != null) {
+          setTemp(Math.round(data.current.temperature_2m));
+        }
+      } catch {}
+    };
+    fetchWeather();
+  }, [userLocation]);
+
   const availableChargers = chargers.filter((c) => c.availableSockets > 0).length;
   const availableParking = parking.filter((p) => p.occupied < p.capacity).length;
   const events = getEventsUpcoming().length;
-  const hydration = getHydrationRecommendation(38); // Dubai avg temp
+  const hydration = getHydrationRecommendation(temp ?? 38);
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -57,8 +93,8 @@ export default function AppOverview() {
         <MetricCard
           icon={AlertTriangle}
           label="Heat Risk"
-          value="Moderate"
-          subtext="39°C"
+          value={temp!=null ? (temp >= 40 ? "High" : temp >= 35 ? "Moderate" : "Low") : "--"}
+          subtext={temp!=null ? `${temp}°C` : "Fetching"}
           color="text-red-500"
         />
         <MetricCard

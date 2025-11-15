@@ -1,11 +1,29 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AlertTriangle, Droplets, Sun, MapPin } from "lucide-react";
 import { getCoolestWalkingTime, getHydrationRecommendation } from "@/lib/simulators/heat";
 
 export default function HealthPage() {
   const coolestTime = getCoolestWalkingTime();
-  const hydration = getHydrationRecommendation(38);
+  const [temp, setTemp] = useState<number | null>(null);
+  const hydration = getHydrationRecommendation(temp ?? 38);
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const lat = 25.2048;
+        const lon = 55.2708;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data?.current?.temperature_2m != null) {
+          setTemp(Math.round(data.current.temperature_2m));
+        }
+      } catch {}
+    };
+    fetchWeather();
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -23,10 +41,10 @@ export default function HealthPage() {
                 Heat Risk
               </h3>
               <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
-                Current temperature: 38°C (Feels like 42°C)
+                Current temperature: {temp!=null ? `${temp}°C` : "--"}
               </p>
               <p className="text-xs text-amber-700 dark:text-amber-300">
-                Risk Level: <span className="font-bold">Moderate</span>
+                Risk Level: <span className="font-bold">{temp!=null ? (temp >= 40 ? "High" : temp >= 35 ? "Moderate" : "Low") : "--"}</span>
               </p>
             </div>
           </div>

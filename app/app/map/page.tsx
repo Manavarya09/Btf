@@ -7,6 +7,7 @@ import { getEVChargers } from "@/lib/simulators/ev";
 import { getParkingZones } from "@/lib/simulators/parking";
 import { getTransitStopsNearLocation } from "@/lib/simulators/transit";
 import { getHeatIndexForLocations } from "@/lib/simulators/heat";
+import { fetchChargersFromOCM } from "@/lib/openchargemap";
 
 // Set Mapbox access token
 mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
@@ -24,6 +25,8 @@ export default function MapPage() {
   const [chargers, setChargers] = useState<EVCharger[]>([]);
   const [parking, setParking] = useState<ParkingZone[]>([]);
   const [transitStops, setTransitStops] = useState<TransitStop[]>([]);
+  const [query, setQuery] = useState("");
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     // Load data
@@ -182,6 +185,52 @@ export default function MapPage() {
     }
   };
 
+  const geocode = async (q: string) => {
+    const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || "";
+    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${token}&limit=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.features && data.features[0]) {
+      const f = data.features[0];
+      return { longitude: f.center[0], latitude: f.center[1], name: f.place_name };
+    }
+    return null;
+  };
+
+  const handleSearch = async () => {
+    if (!query.trim() || !map.current) return;
+    const loc = await geocode(query.trim());
+    if (loc) {
+      map.current.flyTo({ center: [loc.longitude, loc.latitude], zoom: 13 });
+      new mapboxgl.Marker().setLngLat([loc.longitude, loc.latitude]).addTo(map.current);
+      setUserLocation({ latitude: loc.latitude, longitude: loc.longitude });
+      const data = await fetchChargersFromOCM(loc.latitude, loc.longitude, 10);
+      setChargers(data as EVCharger[]);
+      const location = { id: "search", latitude: loc.latitude, longitude: loc.longitude, address: loc.name, district: "Dubai" };
+      const transitData = getTransitStopsNearLocation(location, 5);
+      setTransitStops(transitData);
+    }
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (!map.current) return;
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const loc = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+        setUserLocation(loc);
+        map.current!.flyTo({ center: [loc.longitude, loc.latitude], zoom: 13 });
+        new mapboxgl.Marker().setLngLat([loc.longitude, loc.latitude]).addTo(map.current!);
+        const data = await fetchChargersFromOCM(loc.latitude, loc.longitude, 10);
+        setChargers(data as EVCharger[]);
+        const location = { id: "user", latitude: loc.latitude, longitude: loc.longitude, address: "Your location", district: "Dubai" };
+        const transitData = getTransitStopsNearLocation(location, 5);
+        setTransitStops(transitData);
+      }, () => {
+        map.current!.flyTo({ center: [55.2708, 25.2048], zoom: 12 });
+      });
+    }
+  };
+
   const createMarkerElement = (type: string, color: string) => {
     const el = document.createElement('div');
     el.className = 'marker';
@@ -313,6 +362,13 @@ export default function MapPage() {
             ))}
           </div>
 
+          {/* Location Search */}
+          <div className="absolute top-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex gap-2">
+            <input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search location" className="px-2 py-1 text-sm border border-border-color rounded"/>
+            <button onClick={handleSearch} className="px-2 py-1 text-sm bg-accent-warm text-white rounded">Go</button>
+            <button onClick={handleUseCurrentLocation} className="px-2 py-1 text-sm border border-border-color rounded">Use current</button>
+          </div>
+
           {/* Legend */}
           <div className="absolute bottom-4 left-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3">
             <h4 className="text-sm font-semibold mb-2">Legend</h4>
@@ -373,6 +429,37 @@ export default function MapPage() {
           </div>
         </div>
       )}
+
+      {/* Nearby Lists */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="card-base">
+          <h3 className="font-semibold mb-2">Transit Stops Nearby</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {transitStops.slice(0,20).map((stop)=> (
+              <div key={stop.id} className="p-3 border border-border-color dark:border-gray-700 rounded">
+                <p className="text-sm font-semibold">{stop.district} Transit Stop</p>
+                <p className="text-xs text-text-secondary dark:text-gray-400">{stop.address}</p>
+                <p className="text-xs">Routes: {stop.routes.length}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card-base">
+          <h3 className="font-semibold mb-2">Parking Nearby</h3>
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {parking.slice(0,20).map((zone)=> {
+              const available = zone.capacity - zone.occupied;
+              return (
+                <div key={zone.id} className="p-3 border border-border-color dark:border-gray-700 rounded">
+                  <p className="text-sm font-semibold">{zone.district} Parking</p>
+                  <p className="text-xs text-text-secondary dark:text-gray-400">{zone.address}</p>
+                  <p className="text-xs">{available}/{zone.capacity} spaces • AED {zone.hourlyRate}/hour</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         {["EV Chargers", "Parking", "Transit", "Heat Index"].map((layer, index) => {
