@@ -30,32 +30,32 @@ interface Card {
 // Flavor list
 const flavorlists: Flavor[] = [
     {
-        name: "Chocolate Milk",
+        name: "Hydration",
         color: "brown",
         rotation: "md:rotate-[-8deg] rotate-0",
     },
     {
-        name: "Stawberry Milk",
+        name: "Electrolytes",
         color: "red",
         rotation: "md:rotate-[8deg] rotate-0",
     },
     {
-        name: "Cookies & Cream",
+        name: "Protein",
         color: "blue",
         rotation: "md:rotate-[-8deg] rotate-0",
     },
     {
-        name: "Peanut Butter Chocolate",
+        name: "Energy",
         color: "orange",
         rotation: "md:rotate-[8deg] rotate-0",
     },
     {
-        name: "Vanilla Milkshake",
+        name: "Vitamins",
         color: "white",
         rotation: "md:rotate-[-8deg] rotate-0",
     },
     {
-        name: "Max Chocolate Milk",
+        name: "Minerals",
         color: "black",
         rotation: "md:rotate-[8deg] rotate-0",
     },

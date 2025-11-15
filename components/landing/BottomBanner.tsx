@@ -37,7 +37,7 @@ export const BottomBanner: React.FC = () => {
   });
 
   return (
-    <section className="bottom-banner 2xl:min-h-dvh lg:w-full w-[200%] h-full overflow-hidden relative bg-[#222123] flex flex-col justify-center items-start">
+    <section className="bottom-banner 2xl:min-h-[70vh] lg:min-h-[70vh] min-h-[60vh] w-full h-full overflow-hidden relative bg-[#222123] flex flex-col justify-center items-start">
       <img
         src={getImage("footer-dip.png")}
         alt="footer-img"

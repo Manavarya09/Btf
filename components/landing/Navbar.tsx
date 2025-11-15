@@ -4,6 +4,7 @@ import { useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { getImage } from "@/lib/landing/media";
+import Link from "next/link";
 import { NavMenu } from "./NavMenu";
 
 export const Navbar: React.FC = () => {
@@ -64,23 +65,14 @@ export const Navbar: React.FC = () => {
         />
 
         <div className="px-6 py-2 bg-[#f3e2d5] rounded-3xl hover:bg-[#e9aa56] text-center">
-          <a href="#" className="text-[#523122] text-sm font-semibold p-0 m-0">
+          <Link href="/app" className="text-[#523122] text-sm font-semibold p-0 m-0">
             Go to App
-          </a>
+          </Link>
         </div>
       </nav>
 
-      <div
-        className="p-1 backdrop-blur-xl rounded-full menu-hover lg:inline-block hidden cursor-pointer fixed top-6 left-1/2 transform -translate-x-1/2 z-[1000]"
-        onClick={() => setIsMenuOpen((prev) => !prev)}
-      >
-        {isMenuOpen ? (
-          <i className="ri-close-fill text-[#523122] text-2xl"></i>
-        ) : (
-          <i className="ri-menu-5-line text-[#523122] text-2xl"></i>
-        )}
-      </div>
-      <NavMenu isOpen={isMenuOpen} />
+      {/* removed floating menu icon at top */}
+      <NavMenu isOpen={false} />
     </>
   );
 };

@@ -129,7 +129,7 @@
   }
 
   .hero-container .hero-title {
-    @apply text-dark-brown text-[2.9rem] font-bold uppercase leading-[9vw] tracking-[-.35vw] mb-1;
+    @apply text-milk text-[2.9rem] font-bold uppercase leading-[9vw] tracking-[-.35vw] mb-1;
   }
 
   .hero-container .hero-text-scroll {
@@ -147,7 +147,7 @@
 
   .hero-container h2 {
     font-family: var(--font-paragraph);
-    @apply text-dark-brown text-center max-w-lg max-w-sm px-5 text-lg leading-[115%] mt-2;
+    @apply text-[#f3e2d5] text-center max-w-lg max-w-sm px-5 text-lg leading-[115%] mt-2;
   }
 
   .hero-container .hero-button {
@@ -156,6 +156,10 @@
 
   .hero-container .hero-button:hover {
     @apply bg-light-brown/90;
+  }
+
+  .hero-text-bg {
+    @apply bg-[#00000020] backdrop-blur-sm rounded-md px-2 py-0.5 inline-block;
   }
 
   .message-content {
@@ -340,7 +344,7 @@
   }
 
   .footer-section {
-    @apply min-h-dvh overflow-hidden relative bg-[#222123];
+    @apply min-h-[45vh] overflow-hidden relative bg-[#222123];
   }
 
   .footer-section .social-btn {
@@ -388,6 +392,9 @@
       transform: translateY(0);
     }
   }
+
+  /* Hide Next.js dev overlay button if present */
+  #nextjs-portal { display: none !important; }
 
   /* ARYA App Styles */
   .mapbox-container {

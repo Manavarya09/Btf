@@ -93,17 +93,21 @@ export const HeroSection: React.FC = () => {
         )}
         <div className="hero-content opacity-0">
           <div className="overflow-hidden">
-            <h1 className="hero-title lg:p-0 p-2">CALM, CONNECTED</h1>
+            <div className="hero-text-bg">
+              <h1 className="hero-title lg:p-0 p-2">CALM, CONNECTED</h1>
+            </div>
           </div>
           <div className="hero-text-scroll">
           <div className="hero-subtitle">
             <h1>MOBILITY + AI INTELLIGENCE</h1>
           </div>
           </div>
-          <h2>
-            Live life to the fullest with SPYLT: Shatter boredom and embrace your
-            inner kid with every deliciously smooth chug.
-          </h2>
+          <div className="hero-text-bg mt-3">
+            <h2>
+              Live life to the fullest with SPYLT: Shatter boredom and embrace your
+              inner kid with every deliciously smooth chug.
+            </h2>
+          </div>
           <div className="hero-button hover:bg-[#e9aa56]">
             <Link href="/app">LAUNCH ARYA MOBILITY OS</Link>
           </div>

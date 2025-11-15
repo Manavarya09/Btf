@@ -1,9 +1,5 @@
 {
-  "/app/health/page": "app/app/health/page.js",
-  "/app/events/page": "app/app/events/page.js",
-  "/app/settings/page": "app/app/settings/page.js",
+  "/page": "app/page.js",
   "/app/page": "app/app/page.js",
-  "/app/map/page": "app/app/map/page.js",
-  "/app/ev/page": "app/app/ev/page.js",
   "/app/routes/page": "app/app/routes/page.js"
 }

@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
-import { getImage, getVideo } from "@/lib/landing/media";
+import { getImage } from "@/lib/landing/media";
 import { useMediaQuery } from "react-responsive";
 
 export const FooterSection: React.FC = () => {
@@ -34,30 +34,16 @@ export const FooterSection: React.FC = () => {
 
   return (
     <section className="footer-section lg:pt-20">
-      <div className="2xl:h-[110dvh] relative z-100 lg:pt-[8vh] pt-[8vh]">
+      <div className="relative z-100 lg:pt-[2vh] pt-[2vh] pb-4">
         <div className="overflow-hidden">
           <h1 className="general-title text-center text-milk footer-title-animation lg:pb-0 pb-5">
             #MOVEINTELLIGENTLY
           </h1>
         </div>
       </div>
-      {isMobF ? (
-        <img
-          src={getImage("footer-drink.png")}
-          alt="footer img"
-          className="absolute object-contain top-0 mix-blend-lighten z-10 opacity-90"
-        />
-      ) : (
-        <video
-          src={getVideo("splash.mp4")}
-          autoPlay
-          playsInline
-          muted
-          className="absolute object-contain top-[-4%] mix-blend-lighten z-10 opacity-90"
-        />
-      )}
+      
 
-      <div className="flex-center gap-3 relative z-10 md:mt-10 mt-5">
+      <div className="flex-center gap-3 relative z-10 md:mt-4 mt-2">
         <div className="social-btn">
           <img src={getImage("yt.svg")} alt="yt" />
         </div>
@@ -69,7 +55,7 @@ export const FooterSection: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-30 lg:mb-32 mb-20 md:px-7 px-5 flex gap-10 md:flex-row flex-col justify-between items-start text-milk font-paragraph md:text-sm font-medium">
+      <div className="mt-10 lg:mb-16 mb-10 md:px-7 px-5 flex gap-8 md:flex-row flex-col justify-between items-start text-milk font-paragraph md:text-sm font-medium">
         <div className="flex items-start md:gap-10 gap-5">
           <div>
             <p>Arya</p>

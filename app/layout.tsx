@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "ARYA Mobility OS",
   description: "An AI-powered, multi-modal smart city platform for the UAE",
   icons: {
-    icon: "/favicon.ico",
+    icon: "/landing/assets/images/nav-logo.svg",
   },
 };
 

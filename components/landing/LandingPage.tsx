@@ -7,10 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { Navbar } from "./Navbar";
 import { HeroSection } from "./HeroSection";
 import { MessageSection } from "./MessageSection";
-import { FlavorSection } from "./FlavorSection";
-import { NutritionSection } from "./NutritionSection";
 import { BenefitSection } from "./BenefitSection";
-import { TestimonialSection } from "./TestimonialSection";
 import { BottomBanner } from "./BottomBanner";
 import { FooterSection } from "./FooterSection";
 import { PreLoader } from "./PreLoader";
@@ -43,11 +40,8 @@ export const LandingPage: React.FC = () => {
             <div id="smooth-content">
               <HeroSection />
               <MessageSection />
-              <FlavorSection />
-              <NutritionSection />
               <div>
                 <BenefitSection />
-                <TestimonialSection />
               </div>
               <BottomBanner />
               <FooterSection />
