@@ -13,7 +13,7 @@ const videos: Record<string, { default: string }> = import.meta.glob(
 
 /**
  * Get image path dynamically by file name
- * @param fileName - file name with extension (e.g., 'blue-drink.webp')
+ * @param fileName - file name with extension (e.g., '.webp')
  */
 export const getImage = (fileName: string): string => {
     const key = `../assets/images/${fileName}`;

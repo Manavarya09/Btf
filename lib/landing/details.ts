@@ -56,11 +56,11 @@ const flavorlists: Flavor[] = [
 ];
 
 const nutrientLists: Nutrient[] = [
-  { label: "Potassium", amount: "245mg" },
-  { label: "Calcium", amount: "500mg" },
-  { label: "Vitamin A", amount: "176mcg" },
-  { label: "Vitamin D", amount: "5mcg" },
-  { label: "Iron", amount: "1mg" },
+  { label: "EV Charger Availability", amount: "up to 120 chargers free" },
+  { label: "Parking Stress Level", amount: "moderate occupancy" },
+  { label: "Heat Index", amount: "up to 38°C" },
+  { label: "Event Impact", amount: "Expo City, high crowd" },
+  { label: "Safe Walking Window", amount: "6pm–9am recommended" },
 ];
 
 const cards: Card[] = [
