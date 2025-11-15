@@ -2,17 +2,9 @@ import { useGSAP } from "@gsap/react";
 import { flavorlists } from "../constants/details";
 import gsap from "gsap";
 
-// At the top of component file
-// Glob import all images and videos
-const images: Record<string, { default: string }> = import.meta.glob(
-    "../assets/images/*.{webp,svg,png,jpg,jpeg}",
-    { eager: true }
-);
-
-// Access image by file name dynamically
+// Temporarily disable dynamic imports for Next.js compatibility
 const getImage = (fileName: string): string => {
-    const key = `../assets/images/${fileName}`;
-    return images[key]?.default || "";
+    return `/images/${fileName}`; // Simple path-based approach
 };
 
 const FlavorSlider = () => {

@@ -10,7 +10,7 @@ import menu7 from "../assets/menu-img/menu7.webp";
 
 interface MenuItem {
     name: string;
-    img: string;
+    img: any; // Allow any type for image imports
 }
 
 interface NavMenuProps {
@@ -29,7 +29,7 @@ const NavMenu: React.FC<NavMenuProps> = ({ isOpen = false }) => {
     ];
 
     const [hovered, setHovered] = useState<string | null>(null);
-    const [currentImg, setCurrentImg] = useState<string>(menu7);
+    const [currentImg, setCurrentImg] = useState<any>(menu7); // Allow any type for image
 
     // GSAP animation for menu open/close
     useEffect(() => {

@@ -14,6 +14,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import AryaChatbot from "@/components/AryaChatbot";
 
 const NAV_ITEMS = [
   { href: "/app", label: "Overview", icon: BarChart3 },
@@ -75,9 +76,9 @@ export default function AppLayout({
               <p className="text-text-secondary dark:text-gray-300">
                 Need help? Ask ARYA
               </p>
-              <button className="w-full mt-3 button-primary text-sm">
-                Open Chat
-              </button>
+              <p className="text-xs text-text-secondary dark:text-gray-400 mt-2">
+                Use the chat button in the bottom right corner
+              </p>
             </div>
           </div>
         </div>
@@ -128,6 +129,9 @@ export default function AppLayout({
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      
+      {/* ARYA Chatbot */}
+      <AryaChatbot />
     </div>
   );
 }

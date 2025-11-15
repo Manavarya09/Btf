@@ -148,7 +148,10 @@ export function getHighRiskAreas(): HeatIndex[] {
   return getHeatIndexForLocations(
     DUBAI_LOCATIONS.map((loc) => ({
       id: `loc-${Math.random()}`,
-      ...loc,
+      latitude: loc.lat,
+      longitude: loc.lng,
+      address: loc.name,
+      district: loc.name,
       zone: loc.name,
     }))
   ).filter((hi) => hi.riskLevel === "high" || hi.riskLevel === "extreme");

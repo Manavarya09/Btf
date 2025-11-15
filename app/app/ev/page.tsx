@@ -1,27 +1,56 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Zap, MapPin } from "lucide-react";
+import { Zap, MapPin, Locate, Search } from "lucide-react";
 import { getEVChargers, getChargersByType } from "@/lib/simulators/ev";
+import { fetchChargersFromOCM } from "@/lib/openchargemap";
 import { EVCharger } from "@/types/mobility";
+import Link from "next/link";
 
 export default function EVPage() {
   const [chargers, setChargers] = useState<EVCharger[]>([]);
   const [filterType, setFilterType] = useState<"all" | "fast" | "slow" | "ultra-fast">("all");
   const [loading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationQuery, setLocationQuery] = useState("");
 
   useEffect(() => {
     setLoading(true);
     try {
-      if (filterType === "all") {
-        setChargers(getEVChargers());
+      if (!userLocation) {
+        if (filterType === "all") {
+          setChargers(getEVChargers());
+        } else {
+          setChargers(getChargersByType(filterType));
+        }
       } else {
-        setChargers(getChargersByType(filterType));
+        const run = async () => {
+          const data = await fetchChargersFromOCM(userLocation.latitude, userLocation.longitude, 10);
+          const filtered = filterType === "all" ? data : data.filter((c: any) => c.type === filterType);
+          setChargers(filtered as EVCharger[]);
+        };
+        run();
       }
     } finally {
       setLoading(false);
     }
-  }, [filterType]);
+  }, [filterType, userLocation]);
+
+  const handleUseCurrentLocation = () => {
+    if (navigator.geolocation) {
+      setLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({ latitude: position.coords.latitude, longitude: position.coords.longitude });
+          setLoading(false);
+        },
+        () => {
+          setUserLocation({ latitude: 25.2048, longitude: 55.2708 });
+          setLoading(false);
+        }
+      );
+    }
+  };
 
   const available = chargers.filter((c) => c.availableSockets > 0).length;
 
@@ -40,6 +69,16 @@ export default function EVPage() {
         <StatCard label="Total Chargers" value={chargers.length} icon={Zap} />
         <StatCard label="Available" value={available} icon={MapPin} />
         <StatCard label="Network Coverage" value="95%" icon={Zap} />
+      </div>
+
+      <div className="card-base">
+        <h3 className="font-semibold mb-2">Share your location to use live EV data</h3>
+        <div className="flex gap-2 items-center">
+          <button onClick={handleUseCurrentLocation} className="px-3 py-2 bg-accent-warm text-white rounded flex items-center gap-2"><Locate className="w-4 h-4"/>Use current location</button>
+          <input value={locationQuery} onChange={(e)=>setLocationQuery(e.target.value)} placeholder="Enter area (e.g., Dubai Marina)" className="flex-1 px-3 py-2 border border-border-color rounded"/>
+          <button onClick={()=>setUserLocation({ latitude: 25.2048, longitude: 55.2708 })} className="px-3 py-2 border border-border-color rounded flex items-center gap-2"><Search className="w-4 h-4"/>Use Dubai center</button>
+        </div>
+        <p className="text-xs text-text-secondary mt-2">Without location, showing simulated network data.</p>
       </div>
 
       <div className="card-base">
@@ -115,7 +154,7 @@ export default function EVPage() {
         <p className="text-sm text-blue-800 dark:text-blue-200">
           Use ARYA to plan multi-leg EV trips with optimal charger suggestions
         </p>
-        <button className="mt-4 button-primary">Open Trip Planner</button>
+        <Link href="/app/routes" className="mt-4 button-primary">Open Trip Planner</Link>
       </div>
     </div>
   );

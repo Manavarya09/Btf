@@ -140,7 +140,13 @@ export default function AppOverview() {
               <p className="text-sm text-center text-white/80 mb-4">
                 Ask me anything about mobility, routes, or safety
               </p>
-              <button className="w-full px-4 py-2 bg-white text-accent-warm font-semibold rounded-lg hover:bg-white/90 transition-all">
+              <button
+                className="w-full px-4 py-2 bg-white text-accent-warm font-semibold rounded-lg hover:bg-white/90 transition-all"
+                onClick={() => {
+                  const ev = new CustomEvent("arya:open", { detail: {} });
+                  window.dispatchEvent(ev);
+                }}
+              >
                 Open Chat
               </button>
             </div>
@@ -158,6 +164,10 @@ export default function AppOverview() {
                   <button
                     key={i}
                     className="w-full text-left p-2 rounded text-sm hover:bg-surface-dark dark:hover:bg-gray-700 transition-colors text-text-secondary dark:text-gray-400"
+                    onClick={() => {
+                      const ev = new CustomEvent("arya:open", { detail: { message: query } });
+                      window.dispatchEvent(ev);
+                    }}
                   >
                     {query}
                   </button>

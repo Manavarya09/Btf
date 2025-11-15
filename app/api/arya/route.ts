@@ -1,11 +1,6 @@
 /**
  * ARYA AI Assistant API Endpoint
- * Handles natural language queries and returns mobility insights
- * 
- * To integrate with Gemini AI:
- * 1. Set NEXT_PUBLIC_GEMINI_API_KEY in environment
- * 2. Uncomment the Gemini integration code below
- * 3. Install @google/generative-ai: npm install @google/generative-ai
+ * Enhanced with Google Gemini AI for natural language understanding
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -15,25 +10,65 @@ import { getParkingNearLocation } from "@/lib/simulators/parking";
 import { getHeatIndexForLocations, getCoolestWalkingTime } from "@/lib/simulators/heat";
 import { getEventsUpcoming } from "@/lib/simulators/events";
 import { getTransitStopsNearLocation } from "@/lib/simulators/transit";
+import { fetchChargersFromOCM } from "@/lib/openchargemap";
+
+// Check if Gemini is available
+const GEMINI_AVAILABLE = process.env.NEXT_PUBLIC_GEMINI_API_KEY && process.env.NEXT_PUBLIC_GEMINI_API_KEY !== "your-gemini-api-key";
+
+console.log("Gemini API Key status:", {
+  hasKey: !!process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+  isNotPlaceholder: process.env.NEXT_PUBLIC_GEMINI_API_KEY !== "your-gemini-api-key",
+  available: GEMINI_AVAILABLE
+});
+
+let genAI: any = null;
+if (GEMINI_AVAILABLE) {
+  try {
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+    console.log("Gemini AI initialized successfully");
+  } catch (error) {
+    console.error("Gemini AI initialization error:", error);
+  }
+}
 
 // System prompt for ARYA
-const SYSTEM_PROMPT = `You are ARYA, an AI-powered mobility assistant for Dubai. Your role is to help users navigate the city smartly by:
+const SYSTEM_PROMPT = `You are ARYA, a professional AI-powered mobility assistant for Dubai. Your role is to provide expert navigation and transportation guidance with precision and clarity.
 
-1. Planning multi-modal routes (bus, metro, EV, scooter, walking)
-2. Predicting EV charger availability
-3. Finding parking solutions
-4. Providing heat safety recommendations
-5. Advising on events and crowd impacts
-6. Optimizing for user preferences (fastest, cheapest, eco-friendly, coolest)
+Key capabilities:
+1. Plan multi-modal routes (bus, metro, EV, scooter, walking)
+2. Predict EV charger availability and pricing
+3. Find parking solutions with real-time availability
+4. Provide heat safety recommendations based on current conditions
+5. Advise on events and crowd impacts on mobility
+6. Optimize for user preferences (fastest, cheapest, eco-friendly, coolest)
 
-Always be helpful, accurate, and safety-conscious. For heat-related queries, prioritize user health.
-Provide specific actionable advice, not generic recommendations.
+Response style:
+- Be concise and professional - provide essential information efficiently
+- Structure responses with clear bullet points or numbered lists
+- Focus on actionable recommendations with specific data
+- Include safety considerations when relevant
+- Maintain a knowledgeable, expert tone
+
+Always prioritize:
+- User safety, especially in extreme heat
+- Accurate, real-time information
+- Personalized recommendations based on context
+- Clear, step-by-step guidance
 
 Remember:
 - Dubai uses AED currency
-- Temperatures can exceed 50°C in summer
+- Temperatures can exceed 50°C in summer - mention heat safety when appropriate
 - Metro Red and Green lines are the main transit backbone
-- Multiple ride-sharing options available (Uber, Careem, Tier scooters, Lime)`;
+- Multiple ride-sharing options available (Uber, Careem, Tier scooters, Lime)
+- Weekend is Friday-Saturday, Sunday is a workday
+
+When responding:
+1. Provide direct, concise answers to the user's query
+2. Include specific data points (times, costs, availability numbers)
+3. Structure information clearly with bullet points when multiple options exist
+4. Mention safety considerations briefly when relevant
+5. Offer 2-3 alternatives maximum to avoid overwhelming the user`;
 
 interface AryaRequest {
   message: string;
@@ -49,32 +84,21 @@ export async function POST(request: NextRequest) {
     const body: AryaRequest = await request.json();
     const { message, conversationHistory = [], userLocation } = body;
 
-    // Simple keyword-based routing for demo purposes
-    // In production, use Gemini to understand intent
-    const intent = identifyIntent(message);
+    console.log("Received request:", { message, hasLocation: !!userLocation, conversationLength: conversationHistory.length });
+    console.log("Gemini status:", { available: GEMINI_AVAILABLE, initialized: !!genAI });
 
     let response: AssistantResponse;
 
-    switch (intent) {
-      case "find_chargers":
-        response = await handleChargerQuery(message, userLocation);
-        break;
-      case "find_parking":
-        response = await handleParkingQuery(message, userLocation);
-        break;
-      case "heat_safety":
-        response = await handleHeatQuery(message, userLocation);
-        break;
-      case "plan_route":
-        response = await handleRouteQuery(message, userLocation);
-        break;
-      case "find_transit":
-        response = await handleTransitQuery(message, userLocation);
-        break;
-      default:
-        response = await handleGeneralQuery(message);
+    if (GEMINI_AVAILABLE && genAI) {
+      console.log("Using Gemini AI for response");
+      response = await handleWithGemini(message, userLocation, conversationHistory);
+    } else {
+      console.warn("Gemini AI unavailable, using fallback");
+      const intent = identifyIntent(message);
+      response = await handleWithKeywords(intent, message, userLocation);
     }
 
+    console.log("Sending response:", response.message.substring(0, 100) + "...");
     return NextResponse.json(response);
   } catch (error) {
     console.error("ARYA API Error:", error);
@@ -89,20 +113,180 @@ export async function POST(request: NextRequest) {
   }
 }
 
+async function handleWithGemini(
+  message: string, 
+  userLocation?: { latitude: number; longitude: number },
+  conversationHistory?: ChatMessage[]
+): Promise<AssistantResponse> {
+  try {
+    console.log("Attempting to get Gemini model...");
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    console.log("Gemini model obtained successfully");
+    
+    // Prepare context with mobility data
+    const context = await prepareMobilityContext(userLocation);
+    
+    // Format conversation history naturally
+    const conversationContext = conversationHistory && conversationHistory.length > 1 
+      ? "Previous conversation:\n" + conversationHistory.slice(-4).map(msg => 
+          `${msg.role === 'user' ? 'User' : 'ARYA'}: ${msg.content}`
+        ).join('\n')
+      : "This is the start of our conversation.";
+
+    const locationContext = userLocation 
+      ? `User is currently at approximately ${userLocation.latitude}, ${userLocation.longitude} in Dubai.`
+      : "User location not provided.";
+
+    const prompt = `${SYSTEM_PROMPT}
+
+${locationContext}
+
+${conversationContext}
+
+Current Dubai mobility data:
+${context}
+
+User's latest message: "${message}"
+
+Please respond naturally and conversationally as ARYA. Be helpful, specific, and provide actionable advice based on the current data. If you need more information to give the best recommendation, ask follow-up questions.`;
+
+    console.log("Sending prompt to Gemini...");
+    const result = await model.generateContent(prompt);
+    console.log("Got response from Gemini");
+    const response = await result.response;
+    const text = response.text();
+
+    console.log("Gemini response:", text.substring(0, 200) + "...");
+
+    // Extract any actionable data from the response
+    const data = await extractDataFromResponse(text, userLocation);
+
+    return {
+      message: text,
+      data: data.data,
+      actions: data.actions,
+    };
+  } catch (error) {
+    console.error("Gemini error details:", error);
+    
+    // Try to get available models if the error is about model not found
+    if (error.message?.includes('not found')) {
+      try {
+        console.log("Trying to list available models...");
+        const models = await genAI.listModels();
+        console.log("Available models:", models);
+      } catch (listError) {
+        console.error("Error listing models:", listError);
+      }
+    }
+    
+    // Fallback only if Gemini truly fails
+    return {
+      message: "I'm having trouble processing your request right now. Please try asking in a different way, or let me know if you need help with something specific like finding EV chargers, parking, or planning a route.",
+      data: {},
+      actions: [],
+    };
+  }
+}
+
+async function prepareMobilityContext(userLocation?: { latitude: number; longitude: number }) {
+  const contextParts = [];
+  
+  // Get general conditions data
+  const events = getEventsUpcoming(7);
+  const coolestTime = getCoolestWalkingTime();
+  
+  if (userLocation) {
+    const location = {
+      id: "user-location",
+      latitude: userLocation.latitude,
+      longitude: userLocation.longitude,
+      address: "User location",
+      district: "Dubai",
+    };
+
+    // Get nearby data - use real OCM data for chargers
+    const nearbyChargers = await fetchChargersFromOCM(userLocation.latitude, userLocation.longitude, 5);
+    const nearbyParking = getParkingNearLocation(location, 2).slice(0, 3);
+    const nearbyTransit = getTransitStopsNearLocation(location, 1).slice(0, 2);
+
+    contextParts.push("NEARBY DATA:");
+    contextParts.push(`EV Chargers within 5km: ${nearbyChargers.length} available`);
+    if (nearbyChargers.length > 0) {
+      contextParts.push(`Closest charger: ${nearbyChargers[0].operator} (${nearbyChargers[0].availableSockets}/${nearbyChargers[0].totalSockets} available) at AED ${nearbyChargers[0].price}/kWh`);
+    }
+    
+    contextParts.push(`Parking within 2km: ${nearbyParking.length} zones with availability`);
+    if (nearbyParking.length > 0) {
+      const available = nearbyParking[0].capacity - nearbyParking[0].occupied;
+      contextParts.push(`Closest parking: ${nearbyParking[0].district} (${available}/${nearbyParking[0].capacity} available) at AED ${nearbyParking[0].hourlyRate}/hour`);
+    }
+
+    contextParts.push(`Transit stops within 1km: ${nearbyTransit.length}`);
+    if (nearbyTransit.length > 0) {
+      contextParts.push(`Nearest stop: ${nearbyTransit[0].district} with ${nearbyTransit[0].routes.length} routes`);
+    }
+  }
+
+  contextParts.push("\nCURRENT CONDITIONS:");
+  contextParts.push(`Safest outdoor time: ${coolestTime.timeWindow} (${coolestTime.temperature})`);
+  contextParts.push(`Upcoming events this week: ${events.length}`);
+
+  return contextParts.join('\n');
+}
+
+async function extractDataFromResponse(text: string, userLocation?: { latitude: number; longitude: number }) {
+  const data: any = {};
+  const actions: AssistantResponse["actions"] = [];
+
+  // Extract relevant data based on response content
+  if (text.toLowerCase().includes("charger") || text.toLowerCase().includes("ev")) {
+    if (userLocation) {
+      // Use real OCM data for chargers
+      const chargers = await fetchChargersFromOCM(userLocation.latitude, userLocation.longitude, 5);
+      data.chargers = chargers.slice(0, 5);
+    }
+  }
+
+  if (text.toLowerCase().includes("parking")) {
+    if (userLocation) {
+      const location = {
+        id: "user-location",
+        latitude: userLocation.latitude,
+        longitude: userLocation.longitude,
+        address: "User location",
+        district: "Dubai",
+      };
+      data.parking = getParkingNearLocation(location, 2).slice(0, 5);
+    }
+  }
+
+  if (text.toLowerCase().includes("route") || text.toLowerCase().includes("direction")) {
+    actions.push({
+      type: "navigate",
+      payload: { page: "/app/routes" },
+    });
+  }
+
+  return { data, actions };
+}
+
 function identifyIntent(message: string): string {
   const lowerMsg = message.toLowerCase();
 
   if (
     lowerMsg.includes("charger") ||
     lowerMsg.includes("ev") ||
-    lowerMsg.includes("charge")
+    lowerMsg.includes("charge") ||
+    lowerMsg.includes("electric")
   ) {
     return "find_chargers";
   }
   if (
     lowerMsg.includes("parking") ||
     lowerMsg.includes("park") ||
-    lowerMsg.includes("spot")
+    lowerMsg.includes("spot") ||
+    lowerMsg.includes("garage")
   ) {
     return "find_parking";
   }
@@ -111,7 +295,9 @@ function identifyIntent(message: string): string {
     lowerMsg.includes("hot") ||
     lowerMsg.includes("temperature") ||
     lowerMsg.includes("sun") ||
-    lowerMsg.includes("walk safely")
+    lowerMsg.includes("walk safely") ||
+    lowerMsg.includes("hydration") ||
+    lowerMsg.includes("water")
   ) {
     return "heat_safety";
   }
@@ -119,7 +305,8 @@ function identifyIntent(message: string): string {
     lowerMsg.includes("route") ||
     lowerMsg.includes("directions") ||
     lowerMsg.includes("way to") ||
-    lowerMsg.includes("how do i get")
+    lowerMsg.includes("how do i get") ||
+    lowerMsg.includes("go to")
   ) {
     return "plan_route";
   }
@@ -127,12 +314,45 @@ function identifyIntent(message: string): string {
     lowerMsg.includes("bus") ||
     lowerMsg.includes("metro") ||
     lowerMsg.includes("transit") ||
-    lowerMsg.includes("public transport")
+    lowerMsg.includes("public transport") ||
+    lowerMsg.includes("train")
   ) {
     return "find_transit";
   }
+  if (
+    lowerMsg.includes("event") ||
+    lowerMsg.includes("concert") ||
+    lowerMsg.includes("festival") ||
+    lowerMsg.includes("game") ||
+    lowerMsg.includes("show")
+  ) {
+    return "events";
+  }
 
   return "general";
+}
+
+async function handleWithKeywords(
+  intent: string,
+  message: string,
+  userLocation?: { latitude: number; longitude: number }
+): Promise<AssistantResponse> {
+  switch (intent) {
+    case "find_chargers":
+      return handleChargerQuery(message, userLocation);
+    case "find_parking":
+      return handleParkingQuery(message, userLocation);
+    case "heat_safety":
+      return handleHeatQuery(message, userLocation);
+    case "plan_route":
+      return handleRouteQuery(message, userLocation);
+    case "find_transit":
+      return handleTransitQuery(message, userLocation);
+    case "events":
+      return handleEventsQuery(message, userLocation);
+    default:
+      return handleGeneralQuery(message);
+  }
 }
 
 async function handleChargerQuery(
@@ -267,8 +487,22 @@ async function handleTransitQuery(
   };
 }
 
+async function handleEventsQuery(
+  message: string,
+  userLocation?: { latitude: number; longitude: number }
+): Promise<AssistantResponse> {
+  const events = getEventsUpcoming(7);
+  
+  return {
+    message: `There are ${events.length} events happening in Dubai this week. ${events.length > 0 ? `The next major event is ${events[0].name} at ${events[0].location.district} with an expected crowd of ${(events[0].expectedCrowd / 1000).toFixed(0)}K people.` : ""}`,
+    data: {
+      events: events.slice(0, 5),
+      totalEvents: events.length,
+    },
+  };
+}
+
 async function handleGeneralQuery(message: string): Promise<AssistantResponse> {
-  // For general queries, provide helpful context
   const suggestions = [
     "Find EV chargers near me",
     "Where can I park?",

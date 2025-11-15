@@ -95,7 +95,12 @@ export default function HealthPage() {
           <p className="text-red-800 dark:text-red-200">
             Nearest Hospital: Al Wasl Hospital (2.5 km away)
           </p>
-          <button className="w-full mt-2 button-primary bg-red-600 hover:bg-red-700">
+          <button
+            className="w-full mt-2 button-primary bg-red-600 hover:bg-red-700"
+            onClick={() => {
+              window.location.href = "tel:998";
+            }}
+          >
             Call Ambulance
           </button>
         </div>
