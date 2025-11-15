@@ -38,6 +38,9 @@ dist/
 .cache/
 out/
 
+# Next.js build output
+.next/
+
 # Environment variables
 .env
 .env.local
